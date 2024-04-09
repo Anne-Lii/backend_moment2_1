@@ -33,23 +33,6 @@ app.get("/api/work", (req, res) => {
    });
 });
 
-// Ny route för att hantera .json extension
-app.get("/api/work.json", (req, res) => {
-    client.query(`SELECT * FROM workexperience;`, (err, results) => {
-     if (err) {
-         console.error("Error fetching work experiences: " + err);
-         return res.status(500).json({error: "something went wrong: " + err});
-         
-     }
- 
-     if (results.rows.length === 0) {
-         res.status(404).json({message: "No workingexperiences found"});
-     } else {
-         res.json(results.rows);
-     }
-    });
- });
-
 //Add workexperience
 app.post("/api/work", (req, res) => {
 
