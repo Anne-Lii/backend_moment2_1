@@ -1,25 +1,48 @@
-const mysql = require("mysql");  
+const { Client } = require("pg");     //inkludera postgre
+require("dotenv").config();         //inkludera dotenv filen  
 
 //connection settings
-const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: ""
+const client = new Client({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    ssl: {
+        rejectUnauthorized: false,
+    },
 });
 
-connection.connect((err) => {
+//ansluter till databasen
+client.connect((err) => {
     if (err) {
-    console.error("connection failed" + err);
-    return;
+        console.error("connection failed" + err);
+        return;
     }
 
-    console.log("Connected to MySQL");
+    console.log("Connected to Postgre database");
+
 });
 
-//Query
-connection.query("CREATE DATABASE cv;", (err, results) => {
-    if (err) throw err;
+//skapa en tabell
+client.query(`
+        DROP TABLE IF EXISTS workexperience;
+        CREATE TABLE workexperience (
 
-    console.log("Database created: " + results);
+        id                  SERIAL PRIMARY KEY,
+        companyname         VARCHAR(50) NOT NULL,
+        location            VARCHAR(50) NOT NULL,
+        jobtitle            VARCHAR(50),
+        description         VARCHAR(1000),
+        startdate           DATE NOT NULL,
+        enddate             DATE 
+    )
+    `, (err, res) => {
+    if (err) {
+        console.error(" Error in query execution: " + err)
+        return;
+    }
+
+    console.log("Table workexperience created");
+
 });
