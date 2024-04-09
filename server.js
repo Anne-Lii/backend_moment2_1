@@ -1,5 +1,6 @@
 const express = require("express");  //include express
-const cors = require("cors");                        
+const cors = require("cors");     
+const mysql = require("mysql");                   
 const app = express();                                              //start express
 const port = 3000; 
 
@@ -28,9 +29,10 @@ app.post("/api/work", (req, res) => {
         enddate        
     } = req.body;
 
+    //validering av input och felmeddelanden
     if(!companyname || !location || !jobtitle || !description || !startdate || !enddate) {
        
-        res.status(400).json({error: "Fill in all"});
+        res.status(400).json({error: "You need to fill in all six requirements"});
         return;
     }
 
