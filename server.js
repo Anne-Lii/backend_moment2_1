@@ -1,15 +1,18 @@
-const express = require("express");
+//Code by: Anne-Lii Hansen
+
+//include express, postgre, cors, dotenv
+const express = require("express"); 
 const { Client } = require("pg");
 const cors = require("cors");
-const client = require("./install");
-
+const client = require("./install"); 
+ 
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
+app.use(cors());//cross-origin resource sharing for cross-origin requests
+app.use(express.json());//middlewear to parse incoming JSON
 
 //Routing
 app.get("/api", (req, res) => {
@@ -24,7 +27,7 @@ app.get("/api/work", (req, res) => {
         return res.status(500).json({error: "something went wrong: " + err});
         
     }
-
+    // error if workexperience is empty
     if (results.rows.length === 0) {
         res.status(404).json({message: "No workingexperiences found"});
     } else {
@@ -35,7 +38,7 @@ app.get("/api/work", (req, res) => {
 
 //Add workexperience
 app.post("/api/work", (req, res) => {
-
+    //variables with all attributes
     let {
         companyname,
         location,
@@ -54,7 +57,7 @@ app.post("/api/work", (req, res) => {
         }   
     };
 
-    //validering av input och felmeddelanden
+    //validate input and errors
     if (!companyname || !location || !jobtitle || !description || !startdate || !enddate) {
 
         //error messages
@@ -106,7 +109,7 @@ app.put("/api/work/:id", (req, res) => {
         enddate
     } = req.body;
 
-    // Validering
+    // Validate
     if (!companyname || !location || !jobtitle || !description || !startdate || !enddate) {
         return res.status(400).json({
             message: "All attributes must be included",

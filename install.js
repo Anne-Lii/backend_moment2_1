@@ -1,5 +1,5 @@
-const { Client } = require("pg");     //inkludera postgre
-require("dotenv").config();         //inkludera dotenv filen  
+const { Client } = require("pg");     //include postgre
+require("dotenv").config();         //include dotenv file
 
 //connection settings
 const client = new Client({
@@ -13,7 +13,7 @@ const client = new Client({
     },
 });
 
-//ansluter till databasen
+//connect to database
 client.connect((err) => {
     if (err) {
         console.error("connection failed" + err);
@@ -22,7 +22,7 @@ client.connect((err) => {
     console.log("Connected to Postgre database");
 });
 
-//skapa en tabell
+//create table
 client.query(`
         CREATE TABLE IF NOT EXISTS workexperience (
 
