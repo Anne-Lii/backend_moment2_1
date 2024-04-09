@@ -19,15 +19,12 @@ client.connect((err) => {
         console.error("connection failed" + err);
         return;
     }
-
     console.log("Connected to Postgre database");
-
 });
 
 //skapa en tabell
 client.query(`
-        DROP TABLE IF EXISTS workexperience;
-        CREATE TABLE workexperience (
+        CREATE TABLE IF NOT EXISTS workexperience (
 
         id                  SERIAL PRIMARY KEY,
         companyname         VARCHAR(50) NOT NULL,
@@ -36,13 +33,13 @@ client.query(`
         description         VARCHAR(1000),
         startdate           DATE NOT NULL,
         enddate             DATE 
-    )
-    `, (err, res) => {
+    )`, (err, res) => {
+        
     if (err) {
         console.error(" Error in query execution: " + err)
         return;
     }
-
     console.log("Table workexperience created");
-
 });
+
+module.exports = client;  //export client

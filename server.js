@@ -1,6 +1,7 @@
 const express = require("express");
 const { Client } = require("pg");
 const cors = require("cors");
+const client = require("./install");
 
 require("dotenv").config();
 
@@ -10,30 +11,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-//connection settings
-const client = new Client({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    ssl: {
-        rejectUnauthorized: false,
-    },
-});
-
-//connects to database
-client.connect((err) => {
-    if (err) {
-        console.error("connection failed" + err);
-        return;
-    }
-
-    console.log("Connected to Postgre database");
-});
-
 //Routing
-
 app.get("/api", (req, res) => {
     res.json({ message: " Välkommen till mitt API" })
 });
@@ -73,7 +51,7 @@ app.post("/api/work", (req, res) => {
         details: "",
         https_response: {
 
-}
+        }   
     };
 
     //validering av input och felmeddelanden
@@ -118,7 +96,44 @@ app.post("/api/work", (req, res) => {
 
 //Update workexperience
 app.put("/api/work/:id", (req, res) => {
-    res.json({ message: "Work updated: " + req.params.id });
+    const id = req.params.id;
+    const {
+        companyname,
+        location,
+        jobtitle,
+        description,
+        startdate,
+        enddate
+    } = req.body;
+
+    // Validering
+    if (!companyname || !location || !jobtitle || !description || !startdate || !enddate) {
+        return res.status(400).json({
+            message: "All attributes must be included",
+            https_response: { message: "Bad request", code: 400 }
+        });
+    }
+
+   // SQL uppdate workexperience in database
+    client.query(`
+        UPDATE workexperience 
+        SET companyname = $1, location = $2, jobtitle = $3, description = $4, startdate = $5, enddate = $6
+        WHERE id = $7`, 
+        [companyname, location, jobtitle, description, startdate, enddate, id], 
+        (err, results) => {
+            if (err) {
+                console.error("Error updating work experience: ", err);
+                return res.status(500).json({ error: "Something went wrong" }); 
+            }
+
+            console.log("Query updated: ", results.rows);
+        
+            res.json({ 
+                message: "Work experience updated", 
+                work: { id, companyname, location, jobtitle, description, startdate, enddate }
+            });
+        }
+    );
 });
 
 //Delete workexperience
